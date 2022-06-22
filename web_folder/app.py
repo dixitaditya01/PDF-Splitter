@@ -1,102 +1,3 @@
-'''from zipfile import ZipFile
-from django.shortcuts import redirect, render
-from flask import Flask, render_template, request, send_file, url_for, make_response, send_from_directory
-from PyPDF2 import PdfFileWriter, PdfFileReader
-from werkzeug.utils import secure_filename
-import os
-
-app = Flask(__name__, static_folder='',static_url_path='')
-
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-@app.route('/split', methods=['GET','POST']) 
-def split():
-    
-    for root,dirs,files in os.walk("web_folder/pdfs/"):
-            for file in files:
-                os.remove("web_folder/pdfs/"+file)
-    
-
-    if request.method == 'POST':
-        file = request.files['file']
-        page_number_raw = str(request.form['page'])
-        filename_raw = str(request.form['filename'])
-        
-        filename = secure_filename(file.filename)
-        file.save(filename)
-        pdfFileObj = open(file.filename, 'rb')
-
-
-        l = page_number_raw.split(",")
-        filename = filename_raw.split(",")
-
-        print(l,filename)
-
-        original_pdf = PdfFileReader(pdfFileObj) # Reading the original pdf to be splitted
-
-        start_page = 0
-        filecount = 0
-
-        for i in l:
-            if "-" in i:
-                start,end = map(int,i.split("-"))
-                pdf_writer = PdfFileWriter()
-                for j in range(start_page,start_page+end-start+1):
-                    pdf_writer.addPage(original_pdf.getPage(j))
-                    outputfilename = filename[filecount] + ".pdf"
-
-                with open("web_folder/pdfs/"+outputfilename, 'wb') as output_pdf:
-                    pdf_writer.write(output_pdf)
-
-                print("Created Pdf :",outputfilename)
-                start_page = end-start+1
-
-                pdfoutput = open("web_folder/pdfs/"+outputfilename,'wb')
-                pdf_writer.write(pdfoutput)
-                pdfoutput.close()
-
-            else:
-                pdf_writer = PdfFileWriter()
-                pdf_writer.addPage(original_pdf.getPage(int(i)-1))
-                outputfilename = filename[filecount] + ".pdf"
-                
-                with open("web_folder/pdfs/"+outputfilename, 'wb') as output_pdf:
-                    pdf_writer.write(output_pdf)
-
-                print("Created Pdf :",outputfilename)
-                start_page = i
-
-                pdfoutput = open("web_folder/pdfs/"+outputfilename,'wb')
-                pdf_writer.write(pdfoutput)
-                pdfoutput.close()
-                
-
-            filecount += 1
-        
-        print("Splitting Completed")
-        return render_template('index.html')
-
-@app.route('/split/download_files',methods = ['GET','POST'])
-def get_pdf():
-    os.remove('web_folder/pdfs.zip')
-
-    with ZipFile("web_folder/pdfs.zip", "w") as newzip:
-        for root,dirs,files in os.walk("web_folder/pdfs/"):
-            for file in files:
-                newzip.write('web_folder/pdfs/'+file)
-    
-    return send_file('pdfs.zip',mimetype='zip',as_attachment=True)
-
-
-if __name__ == '__main__':
-    app.run(debug=True)'''
-
-
-
-#from ast import expr_context
-#from zipfile import ZipFile
 from flask import Flask, render_template, request, send_file, url_for, make_response, send_from_directory
 from PyPDF2 import PdfFileWriter, PdfFileReader
 from werkzeug.utils import secure_filename
@@ -125,9 +26,9 @@ def split():
             return render_template('index.html',error_message="The number of pages to be split and filenames must be same")     
         else:
             #removing all the existing pdfs present from the last run
-            for root,dirs,files in os.walk("/Users/adityadixit/Desktop/College/Coding Folder/Internship/web_folder/pdfs/"):
+            for root,dirs,files in os.walk("web_folder/pdfs/"):
                 for file in files:
-                    os.remove("/Users/adityadixit/Desktop/College/Coding Folder/Internship/web_folder/pdfs/"+file)
+                    os.remove("web_folder/pdfs/"+file)
             file = request.files['file']
         
             filename = secure_filename(file.filename)
@@ -162,13 +63,13 @@ def split():
                             pdf_writer.addPage(original_pdf.getPage(j))
                             outputfilename = filename[filecount] + ".pdf"
 
-                        with open("/Users/adityadixit/Desktop/College/Coding Folder/Internship/web_folder/pdfs/"+outputfilename, 'wb') as output_pdf:
+                        with open("web_folder/pdfs/"+outputfilename, 'wb') as output_pdf:
                             pdf_writer.write(output_pdf)
 
                         print("Created Pdf :",outputfilename)
                         start_page = end-start+1
 
-                        pdfoutput = open("/Users/adityadixit/Desktop/College/Coding Folder/Internship/web_folder/pdfs/"+outputfilename,'wb')
+                        pdfoutput = open("web_folder/pdfs/"+outputfilename,'wb')
                         pdf_writer.write(pdfoutput)
                         pdfoutput.close()
 
@@ -177,13 +78,13 @@ def split():
                         pdf_writer.addPage(original_pdf.getPage(int(i)-1))
                         outputfilename = filename[filecount] + ".pdf"
                         
-                        with open("/Users/adityadixit/Desktop/College/Coding Folder/Internship/web_folder/pdfs/"+outputfilename, 'wb') as output_pdf:
+                        with open("web_folder/pdfs/"+outputfilename, 'wb') as output_pdf:
                             pdf_writer.write(output_pdf)
 
                         print("Created Pdf :",outputfilename)
                         start_page = i
 
-                        pdfoutput = open("/Users/adityadixit/Desktop/College/Coding Folder/Internship/web_folder/pdfs/"+outputfilename,'wb')
+                        pdfoutput = open("web_folder/pdfs/"+outputfilename,'wb')
                         pdf_writer.write(pdfoutput)
                         pdfoutput.close()
                         
@@ -191,15 +92,10 @@ def split():
                     filecount += 1
             
             print("removed old zip file")
-            os.remove('/Users/adityadixit/Desktop/College/Coding Folder/Internship/web_folder/pdfs.zip') #removing the old pdfs.zip file
-
-            #creating the new pdfs.zip file to send to the frontend
-            '''with ZipFile("/Users/adityadixit/Desktop/College/Coding Folder/Internship/web_folder/pdfs.zip", "w") as newzip:
-                for root,dirs,files in os.walk("/Users/adityadixit/Desktop/College/Coding Folder/Intertnship/web_folder/pdfs/"):
-                    for file in files:
-                        newzip.write('/Users/adityadixit/Desktop/College/Coding Folder/Internship/web_folder/pdfs/'+file)'''
+            os.remove('web_folder/pdfs.zip') #removing the old pdfs.zip file
             
-            shutil.make_archive('pdfs','zip','/Users/adityadixit/Desktop/College/Coding Folder/Internship/web_folder/pdfs')
+            #creating new zip file of folder pdfs
+            shutil.make_archive('pdfs','zip','web_folder/pdfs')
 
             print("New zip created")
             #sending the new pdfs.zip folder created to the frontend (trigger download in the user machine)
