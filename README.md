@@ -20,7 +20,3 @@ I have used Python 3 Programming language, both for the Frontend and Backend par
 In this project, I have used the PyPDF2 library for manipulating the PDF file as well as Flask library for the frontend.
 
 For more info on all libraries, please refer the requirement.txt file.
-
-## Screenshots
-
-![Screenshot 2022-08-07 at 2 24 42 PM](https://user-images.githubusercontent.com/77913961/183283414-15638a84-6656-4140-8b74-f6045313b167.png)
